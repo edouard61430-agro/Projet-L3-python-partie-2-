@@ -1,5 +1,6 @@
 import geopandas as gpd
 import numpy as np
+import pytest       
 
 try:
     land_use = gpd.read_file('CLC_RARA_RGF_SHP/CLC90/CLC90_RARA_RGF.shp')
@@ -56,3 +57,31 @@ def get_agg_code(fichier: gpd.GeoDataFrame, colonne: str) -> np.ndarray:
 
 land_use = get_agg_code(land_use, 'CODE_90')
 print(land_use.head())
+
+
+def correspondance_code_libelle(code):
+    dico = {
+        1 : "Territoires artificialisés",
+        2 : "Territoires agricoles",
+        3 : "Forêts et milieux semi-naturels",
+        4 : "Zones humides",
+        5 : "Surfaces en eau"
+        }
+    
+    if code not in dico:
+        raise ValueError(f"Le code {code} est inconnu")
+    
+    return dico[code]
+
+
+def test_code():
+    assert correspondance_code_libelle(1) == "Territoires artificialisés"
+
+
+def test_code_invalide():
+    with pytest.raises(ValueError):
+        correspondance_code_libelle(6)
+    
+
+test_code()
+test_code_invalide()
